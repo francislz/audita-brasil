@@ -1,0 +1,8 @@
+# brutos/intermediários: grandes demais para o git; ver data/secoes/*.jsonl.gz
+data/raw/secoes/
+data/raw/zips/
+data/raw/urna/
+data/raw/logs/
+__pycache__/
+.venv/
+.DS_Store

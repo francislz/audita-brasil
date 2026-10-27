@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audita Brasil · 2º turno 2026</title>
+<meta name="description" content="Votos por horário no 2º turno de 2026, calculados a partir dos logs, boletins de urna e RDV publicados pelo TSE.">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="wrap">
+  <p class="eyebrow">Eleição presidencial · 2º turno · 25/10/2026</p>
+  <h1>O que os arquivos das urnas mostram sobre a prorrogação até as 19h</h1>
+  <p class="lede">Todos os números desta página foram calculados a partir dos arquivos que o TSE publica para cada seção eleitoral: o <strong>log da urna</strong> (horário de cada voto), o <strong>Boletim de Urna</strong> (resultado) e o <strong>Registro Digital do Voto</strong> (RDV). Horários em <strong>horário de Brasília</strong>.</p>
+  <div id="cobertura" class="banner" hidden></div>
+  <div class="como">
+    <h2>Como obtivemos estes dados</h2>
+    <ol>
+      <li><strong>Cada urna deixa um "diário".</strong> Ao longo do dia, a urna anota tudo o que acontece, com data e hora, inclusive o momento exato em que cada eleitor termina de votar. Ela <em>não</em> anota em quem a pessoa votou: o voto continua secreto.</li>
+      <li><strong>O TSE publica esses arquivos na internet.</strong> Depois da eleição, o Tribunal Superior Eleitoral disponibiliza, para cada uma das cerca de 500 mil seções do país, três arquivos: esse diário (o <em>log</em>), o <em>boletim de urna</em> (o resultado da seção, o mesmo papel afixado na porta) e o <em>registro digital do voto</em> (a lista de todos os votos dados, embaralhada para não identificar ninguém).</li>
+      <li><strong>Baixamos os arquivos de todas as seções.</strong> Um programa visitou o site do TSE seção por seção e baixou os três arquivos de cada uma. Nenhum dado veio de outra fonte.</li>
+      <li><strong>Contamos os votos hora a hora.</strong> No diário de cada urna, contamos quantas pessoas votaram em cada horário e somamos tudo por seção, zona, cidade, estado e país. Como o Acre e parte do Norte e do Centro-Oeste têm fuso diferente, convertemos todos os horários para o horário de Brasília.</li>
+      <li><strong>Conferimos uma coisa contra a outra.</strong> Verificamos se o total de votos do diário bate com o boletim de urna e se a lista de votos bate com o resultado de cada candidato. Os resultados dessa conferência estão no fim da página.</li>
+    </ol>
+    <p class="muted">Qualquer pessoa pode repetir o processo: os arquivos originais estão no site do TSE e o código que usamos é público.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="veredito" aria-labelledby="h-veredito">
+    <h2 id="h-veredito">Quantos votos foram dados depois das 17h?</h2>
+    <div class="tiles" id="tiles"></div>
+    <p class="nota" id="veredito-texto"></p>
+  </section>
+
+  <section aria-labelledby="h-prorr">
+    <h2 id="h-prorr">Onde a votação foi até as 19h</h2>
+    <p class="sub">Toda urna anota no log o horário em que foi encerrada. Pelo registro de encerramento, a prorrogação não valeu para o país inteiro: a grande maioria das urnas fechou logo depois das 17h, como num dia normal. Contamos como prorrogada a seção cuja urna encerrou às 18h50 ou depois (horário de Brasília); no 2º turno nenhuma urna encerrou entre 18h30 e 18h50, e quase todas as prorrogadas fecharam perto das 19h.</p>
+    <div class="tiles" id="tiles-prorr"></div>
+    <figure class="chart">
+      <div class="legend" aria-hidden="true">
+        <span><i class="sw sw-t2"></i>2º turno</span>
+        <span><i class="sw sw-t1"></i>1º turno</span>
+      </div>
+      <div class="canvas-box"><canvas id="c-enc" role="img" aria-label="Horário de encerramento das urnas"></canvas></div>
+      <figcaption>Número de urnas encerradas em cada intervalo de 15 minutos, horário de Brasília. Escala logarítmica (cada linha da grade vale 10 vezes a anterior), para que os grupos pequenos fiquem visíveis ao lado das quase 490 mil urnas que fecharam às 17h. No 1º turno não houve prorrogação: as urnas que fecharam mais tarde ficaram abertas porque ainda havia eleitores na fila às 17h.</figcaption>
+    </figure>
+    <h3 class="h3">Municípios com seções prorrogadas</h3>
+    <div class="tabela-scroll tabela-alta"><table id="t-prorr" class="tabela"></table></div>
+  </section>
+
+  <section aria-labelledby="h-horario">
+    <h2 id="h-horario">Votos por horário</h2>
+    <p class="sub">Cada ponto é o número de votos que as urnas registraram como <em>computados</em> naquele intervalo. A linha cinza é o 1º turno (04/10, sem prorrogação) nas mesmas urnas, como referência. A faixa sombreada marca 17h–19h, o horário extra das seções prorrogadas.</p>
+    <div class="filtros" role="group" aria-label="Filtros">
+      <label>Estado<select id="f-uf"><option value="">Brasil (todos)</option></select></label>
+      <label>Cidade<select id="f-mun" disabled><option value="">Todas</option></select></label>
+      <label>Zona<select id="f-zona" disabled><option value="">Todas</option></select></label>
+      <label>Seção<select id="f-sec" disabled><option value="">Todas</option></select></label>
+      <div class="seg" role="radiogroup" aria-label="Intervalo">
+        <button type="button" data-g="60" aria-pressed="true">Por hora</button>
+        <button type="button" data-g="15" aria-pressed="false">15 min</button>
+      </div>
+    </div>
+    <div class="grid-chart">
+      <figure class="chart">
+        <div class="legend" aria-hidden="true">
+          <span><i class="sw sw-t2"></i>2º turno (25/10)</span>
+          <span><i class="sw sw-t1"></i>1º turno (04/10)</span>
+          <span><i class="sw sw-band"></i>17h–19h (prorrogação, em parte das seções)</span>
+        </div>
+        <div class="canvas-box"><canvas id="c-horario" role="img" aria-label="Votos por horário"></canvas></div>
+        <figcaption id="cap-horario"></figcaption>
+      </figure>
+      <aside class="painel" id="painel" aria-live="polite"></aside>
+    </div>
+    <details class="tabela-dados"><summary>Ver dados do gráfico em tabela</summary><div id="tab-horario"></div></details>
+  </section>
+
+  <section aria-labelledby="h-cand">
+    <h2 id="h-cand">Votos de 17h às 19h por candidato</h2>
+    <p class="sub">O voto é secreto: o log registra <em>quando</em> cada eleitor votou, mas não <em>em quem</em>, e o RDV embaralha os votos e não guarda horário. Por isso não existe, em nenhum arquivo, a contagem exata por candidato depois das 17h. Abaixo estão duas formas honestas de responder.</p>
+    <div id="cand"></div>
+  </section>
+
+  <section aria-labelledby="h-uf">
+    <h2 id="h-uf">Por estado</h2>
+    <div class="tabela-scroll"><table id="t-uf" class="tabela"></table></div>
+  </section>
+
+  <section aria-labelledby="h-fim">
+    <h2 id="h-fim">A que horas as seções receberam o último voto</h2>
+    <p class="sub">Número de seções cujo último voto caiu em cada intervalo de 15 minutos. Quem estava na fila às 17h sempre pôde votar, então algum voto depois das 17h é normal em qualquer eleição.</p>
+    <figure class="chart">
+      <div class="legend" aria-hidden="true">
+        <span><i class="sw sw-t2"></i>2º turno</span>
+        <span><i class="sw sw-t1"></i>1º turno</span>
+      </div>
+      <div class="canvas-box"><canvas id="c-fim" role="img" aria-label="Horário do último voto por seção"></canvas></div>
+    </figure>
+  </section>
+
+  <section aria-labelledby="h-tardias">
+    <h2 id="h-tardias">Seções com mais votos depois das 17h</h2>
+    <div class="tabela-scroll"><table id="t-tardias" class="tabela"></table></div>
+  </section>
+
+  <section aria-labelledby="h-integ">
+    <h2 id="h-integ">Conferências de integridade</h2>
+    <div id="integ"></div>
+  </section>
+
+  <section aria-labelledby="h-metodo" class="metodo">
+    <h2 id="h-metodo">Metodologia e limitações</h2>
+    <ul>
+      <li><strong>Fonte.</strong> Para cada seção baixamos do TSE (<a href="https://resultados.tse.jus.br/oficial/ele2026/arquivo-urna/3221/" rel="noopener">resultados.tse.jus.br</a>) o BU (<code>bu.dat</code>), o RDV (<code>rdv.dat</code>) e o log (<code>log.jez</code>). BU e RDV são decodificados conforme a especificação ASN.1 publicada pelo TSE.</li>
+      <li><strong>Horário dos votos.</strong> Contamos as linhas <code>O voto do eleitor foi computado</code> do log, que registra a hora local da urna. Cada município é convertido para o horário de Brasília pelo fuso inferido da hora local em que as urnas abriram (08:00 em Brasília em todo o país).</li>
+      <li><strong>Votos sem horário.</strong> Quando uma urna é substituída durante o dia, o log publicado pode trazer só a parte da urna de reserva. Esses votos aparecem no BU mas não no log e estão contados como "sem horário".</li>
+      <li><strong>Por candidato.</strong> A <em>estimativa proporcional</em> supõe que, em cada seção, quem votou depois das 17h votou na mesma proporção que a seção inteira. O <em>teto</em> é o máximo matematicamente possível: em cada seção, um candidato não pode ter recebido depois das 17h mais votos do que o total de votos depois das 17h nem mais do que o total de votos que teve na seção.</li>
+      <li><strong>1º turno.</strong> O log de cada urna guarda também o histórico do 1º turno (04/10), quando não houve prorrogação. Ele serve de base de comparação.</li>
+      <li><strong>Por que o 1º turno tem tantos votos depois das 17h.</strong> Não é erro de fuso: mais de 90% desses votos são de seções que já estão no horário de Brasília (sem nenhuma conversão), a proporção é parecida em todos os fusos e a contagem cai aos poucos a partir das 17h, como uma fila que vai acabando. Quem está na fila às 17h tem direito de votar, e a própria urna registra o encerramento mais tarde nessas seções. Uma explicação provável é que no 1º turno se vota para cinco cargos, o que torna cada voto mais demorado.</li>
+      <li><strong>Seções prorrogadas.</strong> Identificadas pelo horário de encerramento registrado no log de cada urna (18h50 ou depois, horário de Brasília). Esse critério não depende de nenhuma lista oficial; uma seção que encerrou tarde só por causa de fila também seria contada, mas no 2º turno quase não houve filas depois das 17h.</li>
+      <li><strong>Exterior.</strong> Seções no exterior votam no horário local de cada país e ficam fora das séries em horário de Brasília.</li>
+      <li><strong>Reproduzir.</strong> O código e os dados por seção estão no repositório deste site (<code>pipeline/</code> e <code>data/secoes/</code>).</li>
+    </ul>
+  </section>
+</main>
+<footer class="wrap"><p id="rodape"></p></footer>
+<script src="app.js"></script>
+</body>
+</html>
